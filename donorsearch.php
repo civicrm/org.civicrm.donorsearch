@@ -28,6 +28,24 @@ function donorsearch_civicrm_xmlMenu(&$files) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
 function donorsearch_civicrm_install() {
+  $customGroup = civicrm_api3('custom_group', 'create', array(
+    'title' => 'Donor Search details',
+    'name' => 'DS_details',
+    'extends' => 'Contact',
+    'domain_id' => CRM_Core_Config::domainID(),
+    'style' => 'Tab',
+    'is_active' => 1,
+    'collapse_adv_display' => 0,
+    'collapse_display' => 0
+  ));
+
+  foreach (CRM_DonorSearch_FieldInfo::getAttributes() as $param) {
+    civicrm_api3('custom_field', 'create', array_merge($param, array(
+      'custom_group_id' => $customGroup['id'],
+      'is_searchable' => 1,
+      'is_view' => 1,
+    )));
+  }
   _donorsearch_civix_civicrm_install();
 }
 
@@ -37,6 +55,23 @@ function donorsearch_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function donorsearch_civicrm_uninstall() {
+  $customGroupID = civicrm_api3('custom_group', 'getvalue', array(
+    'name' => 'DS_details',
+    'return' => 'id',
+  ));
+  if (!empty($customGroupID)) {
+    foreach (CRM_DonorSearch_FieldInfo::getAttributes() as $param) {
+      $customFieldID = civicrm_api3('custom_field', 'getvalue', array(
+        'custom_group_id' => $customGroupID,
+        'name' => $param['name'],
+        'return' => 'id',
+      ));
+      if (!empty($customFieldID)) {
+        civicrm_api3('custom_field', 'delete', array('id' => $customFieldID));
+      }
+    }
+    civicrm_api3('custom_group', 'delete', array('id' => $customGroupID));
+  }
   _donorsearch_civix_civicrm_uninstall();
 }
 
