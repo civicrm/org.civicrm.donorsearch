@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <extension key="org.civicrm.donorsearch" type="module">
   <file>donorsearch</file>
-  <name>FIXME</name>
+  <name>Donor Search</name>
   <description>FIXME</description>
   <license>AGPL-3.0</license>
   <maintainer>
@@ -22,6 +22,6 @@
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
   <civix>
-    <namespace>CRM/Donorsearch</namespace>
+    <namespace>CRM/DonorSearch</namespace>
   </civix>
 </extension>

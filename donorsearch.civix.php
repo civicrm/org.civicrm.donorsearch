@@ -114,14 +114,14 @@ function _donorsearch_civix_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) 
 }
 
 /**
- * @return CRM_Donorsearch_Upgrader
+ * @return CRM_DonorSearch_Upgrader
  */
 function _donorsearch_civix_upgrader() {
-  if (!file_exists(__DIR__.'/CRM/Donorsearch/Upgrader.php')) {
+  if (!file_exists(__DIR__.'/CRM/DonorSearch/Upgrader.php')) {
     return NULL;
   }
   else {
-    return CRM_Donorsearch_Upgrader_Base::instance();
+    return CRM_DonorSearch_Upgrader_Base::instance();
   }
 }
 
