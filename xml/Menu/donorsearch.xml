@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/ds/register</path>
+    <page_callback>CRM_DonorSearch_Form_Register</page_callback>
+    <title>Register donor search API key</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
