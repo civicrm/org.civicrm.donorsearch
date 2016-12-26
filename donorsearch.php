@@ -83,6 +83,7 @@ function donorsearch_civicrm_install() {
       'is_view' => 1,
     )));
   }
+  CRM_DonorSearch_FieldInfo::getXMLToCustomFieldNameMap();
   _donorsearch_civix_civicrm_install();
 }
 

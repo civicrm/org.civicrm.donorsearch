@@ -6,4 +6,21 @@
     <title>Register donor search API key</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/ds/integrated-search</path>
+    <page_callback>CRM_DonorSearch_Form_IntegratedSearch</page_callback>
+    <title>Donor Integrated Search</title>
+    <access_arguments>admin CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/ds/open-search</path>
+    <page_callback>CRM_DonorSearch_Form_OpenSearch</page_callback>
+    <title>Donor Open Search</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/ds/open-search</path>
+    <page_callback>CRM_DonorSearch_Util::updateRecord</page_callback>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

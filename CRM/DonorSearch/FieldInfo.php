@@ -231,4 +231,35 @@ class CRM_DonorSearch_FieldInfo {
     );
   }
 
+  public static function getXMLToCustomFieldNameMap() {
+    static $xmlToCustomFieldMap = NULL;
+    if (!$xmlToCustomFieldMap) {
+      $xmlToCustomFieldMap = array();
+      foreach (self::getAttributes() as $xmlName => $fieldInfo) {
+        $customFieldID = civicrm_api3('custom_field', 'getvalue', array(
+          'name' => $fieldInfo['name'],
+          'return' => 'id',
+        ));
+        $xmlToCustomFieldMap[$xmlName] = 'custom_' . $customFieldID;
+      }
+    }
+    return $xmlToCustomFieldMap;
+  }
+
+  public static function getBasicSearchFields() {
+    return array(
+      'dFname',
+      'dMname',
+      'dLname',
+      'aAddress',
+      'dCity',
+      'dZip',
+      'dState',
+      'dSFname',
+      'dSMname',
+      'dSLname',
+      'dEmployer',
+    );
+  }
+
 }
