@@ -19,7 +19,7 @@
     <access_arguments>access CiviCRM</access_arguments>
   </item>
   <item>
-    <path>civicrm/ds/open-search</path>
+    <path>civicrm/ds/update-record</path>
     <page_callback>CRM_DonorSearch_Util::updateRecord</page_callback>
     <access_arguments>access CiviCRM</access_arguments>
   </item>

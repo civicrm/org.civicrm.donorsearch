@@ -1,5 +1,30 @@
 <?php
-
+/*
+ +--------------------------------------------------------------------+
+ | CiviCRM version 4.7                                                |
+ +--------------------------------------------------------------------+
+ | Copyright CiviCRM LLC (c) 2004-2016                                |
+ +--------------------------------------------------------------------+
+ | This file is a part of CiviCRM.                                    |
+ |                                                                    |
+ | CiviCRM is free software; you can copy, modify, and distribute it  |
+ | under the terms of the GNU Affero General Public License           |
+ | Version 3, 19 November 2007 and the CiviCRM Licensing Exception.   |
+ |                                                                    |
+ | CiviCRM is distributed in the hope that it will be useful, but     |
+ | WITHOUT ANY WARRANTY; without even the implied warranty of         |
+ | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.               |
+ | See the GNU Affero General Public License for more details.        |
+ |                                                                    |
+ | You should have received a copy of the GNU Affero General Public   |
+ | License and the CiviCRM Licensing Exception along                  |
+ | with this program; if not, contact CiviCRM LLC                     |
+ | at info[AT]civicrm[DOT]org. If you have questions about the        |
+ | GNU Affero General Public License or the licensing of CiviCRM,     |
+ | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
+ +--------------------------------------------------------------------+
+ */
+ 
 require_once 'CRM/Core/Form.php';
 
 /**
@@ -29,6 +54,16 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
    */
   public function setDefaultValues() {
     $defaults = CRM_Core_BAO_Cache::getItem('donor search', 'previous search data');
+
+    // load with sample search data if cached DS data not found
+    if (empty($defaults)) {
+      $defaults = array(
+        'dFname' => 'Kevin',
+        'dLname' => 'Plank',
+        'dState' => 'MD',
+      );
+    }
+
     return $defaults;
   }
 
@@ -60,24 +95,31 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
   public function postProcess() {
     $values = $this->exportValues();
 
-    $searchArgs = array(
-      "key=$this->_apiKey",
-      "id=1",
+    $searchFieldValues = array(
+      'key' => $this->_apiKey,
+      'id' => CRM_Core_Session::getLoggedInContactID(),
     );
-    $searchFieldValues = $searchArgs;
     foreach (CRM_DonorSearch_FieldInfo::getBasicSearchFields() as $name) {
       if (!empty($values[$name])) {
         if (in_array($name, array('dAddress', 'dCity'))) {
           $values[$name] = str_replace(' ', '+', $values[$name]);
         }
-        $searchArgs[] = sprintf('%s=%s', $name, $values[$name]);
         $searchFieldValues[$name] = $values[$name];
       }
     }
 
     CRM_Core_BAO_Cache::setItem($searchFieldValues, 'donor search', 'previous search data');
 
-    $url = "https://www.donorlead.net/API/display.php?" . implode('&', $searchArgs);
+    list($isError, $response) = CRM_DonorSearch_API::singleton($searchFieldValues)->sendRequest('send');
+
+    if ($isError) {
+      $url = CRM_Utils_System::url('civicrm/ds/integrated-search', 'reset=1');
+    }
+    else {
+      $xmlData = CRM_DonorSearch_Util::processDSData($response, $searchFieldValues['id']);
+      $url = $xmlData['profile_link'];
+    }
+
     CRM_Utils_System::redirect($url);
   }
 

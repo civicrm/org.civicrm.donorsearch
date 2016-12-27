@@ -26,9 +26,7 @@
  */
 
 /**
- * One place to store frequently used Donor Search variables. Note that
- * some of the below elements will be dynamic, so we'll probably have a
- * smart caching scheme on a per domain basis
+ * One place to store frequently used Donor Search variables.
  *
  * @package CRM
  * @copyright CiviCRM LLC (c) 2004-2016
@@ -232,7 +230,7 @@ class CRM_DonorSearch_FieldInfo {
   }
 
   public static function getXMLToCustomFieldNameMap() {
-    static $xmlToCustomFieldMap = NULL;
+    $xmlToCustomFieldMap = CRM_Core_BAO_Cache::getItem('donor search', 'xml to custom field map');
     if (!$xmlToCustomFieldMap) {
       $xmlToCustomFieldMap = array();
       foreach (self::getAttributes() as $xmlName => $fieldInfo) {
@@ -242,6 +240,7 @@ class CRM_DonorSearch_FieldInfo {
         ));
         $xmlToCustomFieldMap[$xmlName] = 'custom_' . $customFieldID;
       }
+      CRM_Core_BAO_Cache::setItem($xmlToCustomFieldMap, 'donor search', 'xml to custom field map');
     }
     return $xmlToCustomFieldMap;
   }
@@ -251,7 +250,7 @@ class CRM_DonorSearch_FieldInfo {
       'dFname',
       'dMname',
       'dLname',
-      'aAddress',
+      'dAddress',
       'dCity',
       'dZip',
       'dState',
