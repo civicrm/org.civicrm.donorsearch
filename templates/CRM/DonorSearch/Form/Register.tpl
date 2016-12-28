@@ -56,8 +56,6 @@
    </tr>
 </table>
 
- <div class="crm-submit-buttons"><a href="{crmURL p='civicrm/admin/uf/group/add' q='action=add&reset=1'}"  class="button medium">Open Search</a></div>
- {$config->extensionsDir}
 {* FOOTER *}
 <div class="crm-submit-buttons">
 {include file="CRM/common/formButtons.tpl" location="bottom"}
