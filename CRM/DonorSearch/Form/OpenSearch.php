@@ -67,6 +67,9 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
     return $defaults;
   }
 
+  /**
+   * Build the form object.
+   */
   public function buildQuickForm() {
     $this->add('text', 'dFname', ts('First Name'), array(), TRUE);
     $this->add('text', 'dMname', ts('Middle Name'));
@@ -91,18 +94,22 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
     ));
   }
 
+  /**
+   * Process the form submission.
+   */
   public function postProcess() {
     $values = $this->exportValues();
-
+    // format form values
     $searchFieldValues = $this->formatFormValue($values);
-
+    // store search parameters in cache
     CRM_Core_BAO_Cache::setItem($searchFieldValues, 'donor search', 'previous search data');
-
+    // execute DS send API with provided search parameters
     list($isError, $response) = CRM_DonorSearch_API::singleton($searchFieldValues)->sendRequest('send');
-
+    // if there's any error redirect to integrated-search page
     if ($isError) {
       $url = CRM_Utils_System::url('civicrm/ds/integrated-search', 'reset=1');
     }
+    // on successful submission populate the custom fields with desired DS data and redirect to DS profile
     else {
       $xmlData = CRM_DonorSearch_Util::processDSData($response, $searchFieldValues['id']);
       $url = $xmlData['profile_link'];
@@ -111,6 +118,13 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
     CRM_Utils_System::redirect($url);
   }
 
+  /**
+   * Format form-values
+   *
+   * @param array $values
+   *
+   * @return array
+   */
   public function formatFormValue($values) {
     $searchFieldValues = array(
       'key' => $this->_apiKey,

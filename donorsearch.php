@@ -120,7 +120,12 @@ function donorsearch_civicrm_uninstall() {
     civicrm_api3('custom_group', 'delete', array('id' => $customGroupID));
   }
 
+  // delete 'donor search' cache
   CRM_Core_BAO_Cache::deleteGroup('donor search');
+
+  // delete Donor Search API key
+  Civi::settings()->revert('ds_api_key');
+
   _donorsearch_civix_civicrm_uninstall();
 }
 
