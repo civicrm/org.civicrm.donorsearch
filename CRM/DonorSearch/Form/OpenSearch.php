@@ -24,7 +24,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
  */
- 
+
 require_once 'CRM/Core/Form.php';
 
 /**
@@ -89,24 +89,12 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
         'isDefault' => TRUE,
       ),
     ));
-
   }
 
   public function postProcess() {
     $values = $this->exportValues();
 
-    $searchFieldValues = array(
-      'key' => $this->_apiKey,
-      'id' => CRM_Core_Session::getLoggedInContactID(),
-    );
-    foreach (CRM_DonorSearch_FieldInfo::getBasicSearchFields() as $name) {
-      if (!empty($values[$name])) {
-        if (in_array($name, array('dAddress', 'dCity'))) {
-          $values[$name] = str_replace(' ', '+', $values[$name]);
-        }
-        $searchFieldValues[$name] = $values[$name];
-      }
-    }
+    $searchFieldValues = $this->formatFormValue($values);
 
     CRM_Core_BAO_Cache::setItem($searchFieldValues, 'donor search', 'previous search data');
 
@@ -121,6 +109,23 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
     }
 
     CRM_Utils_System::redirect($url);
+  }
+
+  public function formatFormValue($values) {
+    $searchFieldValues = array(
+      'key' => $this->_apiKey,
+      'id' => CRM_Core_Session::getLoggedInContactID(),
+    );
+    foreach (CRM_DonorSearch_FieldInfo::getBasicSearchFields() as $name) {
+      if (!empty($values[$name])) {
+        if (in_array($name, array('dAddress', 'dCity'))) {
+          $values[$name] = str_replace(' ', '+', $values[$name]);
+        }
+        $searchFieldValues[$name] = $values[$name];
+      }
+    }
+
+    return $searchFieldValues;
   }
 
 }

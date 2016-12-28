@@ -27,75 +27,75 @@
 
 class CRM_DonorSearch_Util {
 
+  /**
+   * Update the current Donor Search data of a contact
+   */
   public static function updateRecord() {
-    $apiKey = Civi::settings()->get('ds_api_key');
-    if (empty($apiKey)) {
-      CRM_Core_Error::fatal(ts("Donor Search API key missing."));
-    }
-
+    // fetch the search parameters from cache, used earlier to perform a new Donor Search
     $previousDSparams = CRM_Core_BAO_Cache::getItem('donor search', 'previous search data');
+    // If Search ID (as contact ID) is missing
     if (empty($previousDSparams['id'])) {
       $previousDSparams['id'] = CRM_Core_Session::getLoggedInContactID();
     }
+    // If Donor Search API key is missing
     if (empty($previousDSparams['key'])) {
+      $apiKey = Civi::settings()->get('ds_api_key');
+      if (empty($apiKey)) {
+        CRM_Core_Error::fatal(ts("Donor Search API key missing."));
+      }
       $previousDSparams['key'] = $apiKey;
     }
 
+    // Fetch Donor Search data via GET api
     $apiRequest = CRM_DonorSearch_API::singleton($previousDSparams);
     list($isError, $response) = $apiRequest->sendRequest('get');
 
+    // If there is no record found for given Search ID then register a new search
+    // using search parameters used earlier via SEND api. This will return the
+    // corrosponding donor search data which is later stored against logged in contact ID
     if ($isError && (trim($response) == 'No records found')) {
       if (!empty($previousDSparams)) {
         list($isError, $response) = $apiRequest->sendRequest('send');
       }
     }
 
+    // update DS data recieved from GET or SEND api above, against contact ID (as search ID)
     if (!$isError) {
       self::processDSData($response, $previousDSparams['id']);
     }
 
+    // show status and redirect to 'Donor Integrated Search' page
     CRM_Core_Session::setStatus(ts("DS Record updated for Contact ID - " . $previousDSparams['id']), ts('Success'), 'success');
     CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/ds/integrated-search', 'reset=1'));
   }
 
-  public static function throwDSError($response) {
-    $isError = TRUE;
-    switch (trim($response)) {
-      case 'Key not Valid':
-        CRM_Core_Session::setStatus(ts("Donor Search API Key is not valid"), ts('Error'), 'error');
-        break;
-
-      case 'API key already created':
-        CRM_Core_Session::setStatus(ts("API Key already generated"), ts('Warning'));
-        break;
-
-      case 'Error':
-        CRM_Core_Session::setStatus(ts("Invalid username and/or password provided OR<br /> API key is already generated"), ts('Error'), 'error');
-        break;
-
-      case 'No records found':
-        CRM_Core_Session::setStatus(ts("No Donor Search record found"), ts('Warning'));
-        break;
-
-      default:
-        $isError = FALSE;
-        break;
-    }
-
-    return $isError;
-  }
-
+  /**
+   * Process Donor Search data in XML format, recieved from SEND or GET api
+   *
+   * @param string $response
+   *   donor search data in xml format
+   * @param int $contactID
+   *   contact ID as search ID
+   *
+   * @return array
+   */
   public static function processDSData($response, $contactID) {
+    // encode the raw DS data to html entites which is basically in xml format
     $response = html_entity_decode(str_replace('<pre>', '', $response));
     list($xml, $error) = CRM_Utils_XML::parseString($response);
+    // if there is any error while parsing into xml data, abort the process and throw desired error
     if ($error) {
       CRM_Core_Error::fatal(ts($error));
     }
 
+    // useful to format api param by placing value against
+    // corresponding custom field that represent a DS attribute
     $xmlToFieldMap = CRM_DonorSearch_FieldInfo::getXMLToCustomFieldNameMap();
+    // convert the xml obj to array
     $xmlData = CRM_Utils_XML::xmlObjToArray($xml);
 
     $param = array('id' => $contactID);
+    // set value against its desired custom field that represent a DS attribute
     foreach ($xmlData as $xmlName => $value) {
       // as per the documentation there are few attributes which are optional and can be ignored
       if (!array_key_exists($xmlName, $xmlToFieldMap)) {
@@ -104,6 +104,7 @@ class CRM_DonorSearch_Util {
       $param[$xmlToFieldMap[$xmlName]] = $value;
     }
 
+    // update the contact (id - $contactID) with donor search data
     civicrm_api3('Contact', 'create', $param);
 
     return $xmlData;

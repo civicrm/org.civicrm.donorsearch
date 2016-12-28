@@ -25,19 +25,48 @@
  +--------------------------------------------------------------------+
  */
 
+/**
+ * Class to send Donor Search API request
+ */
 class CRM_DonorSearch_API {
 
+  /**
+   * Instance of this object.
+   *
+   * @var CRM_DonorSearch_API
+   */
   public static $_singleton = NULL;
 
+  /**
+   * Search parameters later formated into API url arguments
+   *
+   * @var array
+   */
   protected $_searchParams;
 
+  /**
+   * Instance of CRM_Utils_HttpClient
+   *
+   * @var CRM_Utils_HttpClient
+   */
   protected $_httpClient;
 
+  /**
+   * The constructor sets search parameters and instantiate CRM_Utils_HttpClient
+   */
   public function __construct($searchParams) {
     $this->_searchParams = $searchParams;
     $this->_httpClient = new CRM_Utils_HttpClient();
   }
 
+  /**
+   * Singleton function used to manage this object.
+   *
+   * @param array $searchParams
+   *   Donor Search parameters
+   *
+   * @return CRM_DonorSearch_API
+   */
   public static function &singleton($searchParams) {
     if (self::$_singleton === NULL) {
       self::$_singleton = new CRM_DonorSearch_API($searchParams);
@@ -45,29 +74,78 @@ class CRM_DonorSearch_API {
     return self::$_singleton;
   }
 
+  /**
+   * Singleton function used to manage this object.
+   *
+   * @param string $apiName
+   *   Donor Search API names which are get, getKey, send and display
+   *
+   * @return array
+   */
   public function sendRequest($apiName) {
     $searchArgs = array();
+    // for Get API consider only api key and search id as search arguments
     if ($apiName == 'get') {
       foreach (array('key', 'id') as $arg) {
         $searchArgs[] = "$arg=" . $this->_searchParams[$arg];
       }
     }
     else {
+      // for Send API add 'redirect = 1' parameter for getting DS data in return
+      // later used to update contact
       if ($apiName == 'send') {
         $this->_searchParams['Redirect'] = 1;
       }
+      // Format search parameters into url arguments i.e. array(attr => value) to 'attr=value'
       foreach ($this->_searchParams as $arg => $value) {
         $searchArgs[] = "$arg=$value";
       }
     }
 
+    // send API request with desired search arguments
     $url = sprintf("https://www.donorlead.net/API/%s.php?%s", $apiName, implode('&', $searchArgs));
     list($status, $response) = $this->_httpClient->get($url);
 
     return array(
-      CRM_DonorSearch_Util::throwDSError($response),
+      self::throwDSError($response),
       $response,
     );
+  }
+
+  /**
+   * Show error/warning if there's anything wrong in $response
+   *
+   * @param string $response
+   *   fetched data from DS API
+   *
+   * @return bool
+   *   Found error ? TRUE or FALSE
+   */
+  public static function throwDSError($response) {
+    $isError = TRUE;
+    switch (trim($response)) {
+      case 'Key not Valid':
+        CRM_Core_Session::setStatus(ts("Donor Search API Key is not valid"), ts('Error'), 'error');
+        break;
+
+      case 'API key already created':
+        CRM_Core_Session::setStatus(ts("API Key already generated"), ts('Warning'));
+        break;
+
+      case 'Error':
+        CRM_Core_Session::setStatus(ts("Invalid username and/or password provided OR<br /> API key is already generated"), ts('Error'), 'error');
+        break;
+
+      case 'No records found':
+        CRM_Core_Session::setStatus(ts("No Donor Search record found"), ts('Warning'));
+        break;
+
+      default:
+        $isError = FALSE;
+        break;
+    }
+
+    return $isError;
   }
 
 }
