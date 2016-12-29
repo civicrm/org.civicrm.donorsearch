@@ -115,7 +115,7 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
       $url = $xmlData['profile_link'];
     }
 
-    CRM_Core_Session::singleton()->pushUserContext($url);
+    CRM_Utils_System::redirect($url);
   }
 
   /**
