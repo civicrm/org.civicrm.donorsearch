@@ -2,7 +2,7 @@
 <extension key="org.civicrm.donorsearch" type="module">
   <file>donorsearch</file>
   <name>Donor Search</name>
-  <description>FIXME</description>
+  <description>This extension will allow wealth lookups of CiviCRM contacts using the DonorSearch Wealth Research Service.</description>
   <license>AGPL-3.0</license>
   <maintainer>
     <author>deb.monish</author>
@@ -18,7 +18,7 @@
   <version>1.0</version>
   <develStage>alpha</develStage>
   <compatibility>
-    <ver>4.2</ver>
+    <ver>4.7</ver>
   </compatibility>
   <comments>This is a new, undeveloped module</comments>
   <civix>
