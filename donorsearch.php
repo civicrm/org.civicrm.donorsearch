@@ -31,7 +31,7 @@ function donorsearch_civicrm_xmlMenu(&$files) {
 function donorsearch_civicrm_install() {
   $navigation = civicrm_api3('Navigation', 'create', array (
     'domain_id' => CRM_Core_Config::domainID(),
-    'label' => ts('Donor Search'),
+    'label' => ts('DonorSearch', array('domain' => 'org.civicrm.donorsearch')),
     'name' => 'donor_search',
     'is_active' => 1,
     'parent_id' => civicrm_api3('Navigation', 'getvalue', array(
@@ -66,7 +66,7 @@ function donorsearch_civicrm_install() {
   CRM_Core_BAO_Navigation::resetNavigation();
 
   $customGroup = civicrm_api3('custom_group', 'create', array(
-    'title' => 'Donor Search details',
+    'title' => ts('DonorSearch', array('domain' => 'org.civicrm.donorsearch')),
     'name' => 'DS_details',
     'extends' => 'Contact',
     'domain_id' => CRM_Core_Config::domainID(),
