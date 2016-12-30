@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/DonorSearch</base>
+  <class>SavedSearch</class>
+  <name>civicrm_ds_saved_search</name>
+  <comment>Myob table to save donor search criteria.</comment>
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Donor Search saved search ID</comment>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+  <field>
+    <name>search_criteria</name>
+    <type>longtext</type>
+    <comment>Serialized donor search data</comment>
+  </field>
+</table>
