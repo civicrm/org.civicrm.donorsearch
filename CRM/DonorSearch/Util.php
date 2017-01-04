@@ -31,12 +31,11 @@ class CRM_DonorSearch_Util {
    * Update the current Donor Search data of a contact
    */
   public static function updateRecord() {
-    // fetch the search parameters from cache, used earlier to perform a new Donor Search
-    $previousDSparams = CRM_Core_BAO_Cache::getItem('donor search', 'previous search data');
-    // If Search ID (as contact ID) is missing
-    if (empty($previousDSparams['id'])) {
-      $previousDSparams['id'] = CRM_Core_Session::getLoggedInContactID();
-    }
+    $dao = new CRM_DonorSearch_DAO_SavedSearch();
+    $dao->id = CRM_Utils_Request::retrieve('id', 'Positive', $this, TRUE);
+    $dao->find(TRUE);
+    $previousDSparams = unserialize($dao->search_criteria);
+
     // If Donor Search API key is missing
     if (empty($previousDSparams['key'])) {
       $apiKey = Civi::settings()->get('ds_api_key');
@@ -48,14 +47,14 @@ class CRM_DonorSearch_Util {
 
     // Fetch Donor Search data via GET api
     $apiRequest = CRM_DonorSearch_API::singleton($previousDSparams);
-    list($isError, $response) = $apiRequest->sendRequest('get');
+    list($isError, $response) = $apiRequest->get();
 
     // If there is no record found for given Search ID then register a new search
     // using search parameters used earlier via SEND api. This will return the
     // corrosponding donor search data which is later stored against logged in contact ID
     if ($isError && (trim($response) == 'No records found')) {
       if (!empty($previousDSparams)) {
-        list($isError, $response) = $apiRequest->sendRequest('send');
+        list($isError, $response) = $apiRequest->send();
       }
     }
 
@@ -66,7 +65,7 @@ class CRM_DonorSearch_Util {
 
     // show status and redirect to 'Donor Integrated Search' page
     CRM_Core_Session::setStatus(ts("DS Record updated for Contact ID - " . $previousDSparams['id']), ts('Success'), 'success');
-    CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/ds/integrated-search', 'reset=1'));
+    CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/ds/integrated-search', 'reset=1&id=' . $dao->id));
   }
 
   /**
@@ -109,4 +108,17 @@ class CRM_DonorSearch_Util {
 
     return $xmlData;
   }
+
+  /**
+   * Delete the desired Donor Search data of a contact
+   */
+  public static function deleteRecord() {
+    $dao = new CRM_DonorSearch_DAO_SavedSearch();
+    $dao->id = CRM_Utils_Request::retrieve('id', 'Positive', $this, TRUE);
+    $dao->delete();
+
+    CRM_Core_Session::setStatus(ts("Donor Search deleted successfully"), ts('Success'), 'success');
+    CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/ds/view', 'reset=1'));
+  }
+
 }

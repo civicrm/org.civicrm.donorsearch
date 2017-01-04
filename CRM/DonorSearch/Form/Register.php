@@ -24,7 +24,7 @@
  | see the CiviCRM license FAQ at http://civicrm.org/licensing        |
  +--------------------------------------------------------------------+
  */
- 
+
 require_once 'CRM/Core/Form.php';
 
 /**
@@ -123,7 +123,7 @@ class CRM_DonorSearch_Form_Register extends CRM_Core_Form {
         'pass' => $values['pass'],
       );
 
-      list($isError, $response) = CRM_DonorSearch_API::singleton($searchParams)->sendRequest('getKey');
+      list($isError, $response) = CRM_DonorSearch_API::singleton($searchParams)->getKey();
 
       if ($isError) {
         return;

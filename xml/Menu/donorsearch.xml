@@ -23,4 +23,15 @@
     <page_callback>CRM_DonorSearch_Util::updateRecord</page_callback>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/ds/view</path>
+    <page_callback>CRM_DonorSearch_Page_View</page_callback>
+    <title>View</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/ds/delete</path>
+    <page_callback>CRM_DonorSearch_Util::deleteRecord</page_callback>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
 </menu>

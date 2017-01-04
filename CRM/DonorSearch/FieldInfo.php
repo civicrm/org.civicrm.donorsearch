@@ -247,6 +247,7 @@ class CRM_DonorSearch_FieldInfo {
 
   public static function getBasicSearchFields() {
     return array(
+      'id',
       'dFname',
       'dMname',
       'dLname',

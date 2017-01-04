@@ -11,13 +11,13 @@
   </tr>
   <tr>
     <td style="vertical-align:middle;">
-      <a href="{crmURL p='civicrm/ds/open-search' q='reset=1'}"  class="button big" target="_blank">OPEN SEARCH</a>
+      <a href="{crmURL p='civicrm/ds/open-search' q="reset=1&id=$id"}"  class="button big" target="_blank">OPEN SEARCH</a>
     </td>
     <td class="big msg-title">
       <center><b>OR</b></center>
     </td>
     <td>
-      <a href="{crmURL p='civicrm/ds/update-record' q='reset=1'}"  class="button big">UPDATE CURRENT RECORD</a>
+      <a href="{crmURL p='civicrm/ds/update-record' q="reset=1&id=$id"}"  class="button big">UPDATE CURRENT RECORD</a>
     </td>
   </tr>
 </table>

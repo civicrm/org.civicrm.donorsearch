@@ -48,8 +48,12 @@ function donorsearch_civicrm_install() {
       'url' => 'civicrm/ds/register?reset=1',
     ),
     array(
-      'label' => ts('Integrated Search'),
-      'url' => 'civicrm/ds/integrated-search?reset=1',
+      'label' => ts('View Donor Search'),
+      'url' => 'civicrm/ds/view?reset=1',
+    ),
+    array(
+      'label' => ts('New Donor Search'),
+      'url' => 'civicrm/ds/open-search?reset=1',
     ),
   );
   foreach ($params as $key => $param) {

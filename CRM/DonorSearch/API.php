@@ -75,7 +75,28 @@ class CRM_DonorSearch_API {
   }
 
   /**
-   * Singleton function used to manage this object.
+   * Function to make Donor Search send API request
+   */
+  public function get() {
+    return $this->sendRequest('get');
+  }
+
+  /**
+   * Function to make Donor Search send API request
+   */
+  public function send() {
+    return $this->sendRequest('send');
+  }
+
+  /**
+   * Function to make Donor Search getKey API request
+   */
+  public function getKey() {
+    return $this->sendRequest('getKey');
+  }
+
+  /**
+   * Function used to make Donor Search API request
    *
    * @param string $apiName
    *   Donor Search API names which are get, getKey, send and display
@@ -103,7 +124,7 @@ class CRM_DonorSearch_API {
     }
 
     // send API request with desired search arguments
-    $url = sprintf("https://www.donorlead.net/API/%s.php?%s", $apiName, implode('&', $searchArgs));
+    $url = sprintf("https://www.donorlead.net/API/%s.php?%s", $apiName, str_replace(' ', '+', implode('&', $searchArgs)));
     list($status, $response) = $this->_httpClient->get($url);
 
     return array(
