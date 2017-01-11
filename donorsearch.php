@@ -9,6 +9,14 @@ require_once 'CRM/DonorSearch/FieldInfo.php';
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
  */
 function donorsearch_civicrm_config(&$config) {
+  $cid = CRM_Utils_Array::value('cid', $_GET);
+  CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
+    'markup' => '
+      <a class="no-popup button" target="_blank" href="' . CRM_Utils_System::url('civicrm/view/ds-profile', "cid=$cid") . '">
+        <span>View Donor Search Profile</span>
+      </a>
+    ',
+  ));
   _donorsearch_civix_civicrm_config($config);
 }
 
@@ -29,45 +37,51 @@ function donorsearch_civicrm_xmlMenu(&$files) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
 function donorsearch_civicrm_install() {
-  $navigation = civicrm_api3('Navigation', 'create', array (
+  civicrm_api3('Navigation', 'create', array(
+    'label' => ts('Register Donor Search API Key'),
+    'name' => 'ds_register_api',
+    'url' => 'civicrm/ds/register?reset=1',
     'domain_id' => CRM_Core_Config::domainID(),
-    'label' => ts('DonorSearch', array('domain' => 'org.civicrm.donorsearch')),
-    'name' => 'donor_search',
     'is_active' => 1,
     'parent_id' => civicrm_api3('Navigation', 'getvalue', array(
       'return' => "id",
-      'name' => "Administer",
+      'name' => "System Settings",
     )),
     'permission' => 'administer CiviCRM',
   ));
-  CRM_Core_BAO_Navigation::resetNavigation();
 
+  civicrm_api3('Navigation', 'create', array(
+    'id' => civicrm_api3('Navigation', 'getvalue', array(
+      'return' => "id",
+      'name' => "Find and Merge Duplicate Contacts",
+    )),
+    'has_separator' => 1,
+  ));
   $params = array(
     array(
-      'label' => ts('Register API Key'),
-      'url' => 'civicrm/ds/register?reset=1',
-    ),
-    array(
       'label' => ts('View Donor Search'),
+      'name' => 'ds_view',
       'url' => 'civicrm/ds/view?reset=1',
     ),
     array(
       'label' => ts('New Donor Search'),
+      'name' => 'ds_new',
       'url' => 'civicrm/ds/open-search?reset=1',
     ),
   );
-  foreach ($params as $key => $param) {
+  foreach ($params as $param) {
     civicrm_api3('Navigation', 'create', array_merge($param,
       array(
         'domain_id' => CRM_Core_Config::domainID(),
-        'weight' => $key,
         'is_active' => 1,
-        'parent_id' => $navigation['id'],
-        'permission' => 'administer CiviCRM',
+        'parent_id' => civicrm_api3('Navigation', 'getvalue', array(
+          'return' => "id",
+          'name' => "Contacts",
+        )),
+        'permission' => 'access DonorSearch',
       )
     ));
   }
-  CRM_Core_BAO_Navigation::resetNavigation();
 
   $customGroup = civicrm_api3('custom_group', 'create', array(
     'title' => ts('DonorSearch', array('domain' => 'org.civicrm.donorsearch')),
@@ -97,14 +111,7 @@ function donorsearch_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function donorsearch_civicrm_uninstall() {
-  $id = civicrm_api3('Navigation', 'getvalue', array(
-    'return' => "id",
-    'name' => "donor_search",
-  ));
-  if ($id) {
-    civicrm_api3('Navigation', 'delete', array('id' => $id));
-  }
-  CRM_Core_BAO_Navigation::resetNavigation();
+  changeDSNavigation('delete');
 
   $customGroupID = civicrm_api3('custom_group', 'getvalue', array(
     'name' => 'DS_details',
@@ -139,9 +146,7 @@ function donorsearch_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function donorsearch_civicrm_enable() {
-  $menuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'donor_search', 'id', 'name');
-  CRM_Core_BAO_Navigation::setIsActive($menuId, 1);
-  CRM_Core_BAO_Navigation::resetNavigation();
+  changeDSNavigation('enable');
 
   _donorsearch_civix_civicrm_enable();
 }
@@ -152,11 +157,61 @@ function donorsearch_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function donorsearch_civicrm_disable() {
-  $menuId = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', 'donor_search', 'id', 'name');
-  CRM_Core_BAO_Navigation::setIsActive($menuId, 0);
-  CRM_Core_BAO_Navigation::resetNavigation();
+  changeDSNavigation('disable');
 
   _donorsearch_civix_civicrm_disable();
+}
+
+/**
+ * disable/enable/delete Donor Search links
+ */
+function changeDSNavigation($action) {
+  $names = array('ds_register_api', 'ds_view', 'ds_new');
+
+  foreach ($names as $name) {
+    if ($name == 'delete') {
+      $id = civicrm_api3('Navigation', 'getvalue', array(
+        'return' => "id",
+        'name' => $name,
+      ));
+      if ($id) {
+        civicrm_api3('Navigation', 'delete', array('id' => $id));
+      }
+    }
+    else {
+      $isActive = ($action == 'enable') ? 1 : 0;
+      CRM_Core_BAO_Navigation::setIsActive(
+        CRM_Core_DAO::getFieldValue('CRM_Core_DAO_Navigation', $name, 'id', 'name'),
+        $isActive
+      );
+    }
+  }
+
+  CRM_Core_BAO_Navigation::resetNavigation();
+}
+
+/**
+ * Implementation of hook_civicrm_permission
+ *
+ * @param array $permissions
+ * @return void
+ */
+function donorsearch_civicrm_permission(&$permissions) {
+  $permissions += array('access DonorSearch' => ts('Access DonorSearch'));
+}
+
+function donorSearch_civicrm_summaryActions(&$menu, $contactId) {
+  $menu += array(
+    'view-ds-profile' => array(
+      'title' => ts('View Donor Search Profile'),
+      'ref' => 'ds-profile',
+      'key' => 'view-ds-profile',
+      'href' => CRM_Utils_System::url('civicrm/view/ds-profile', 'reset=1'),
+      'weight' => 100,
+      'class' => 'no-popup',
+      'permissions' => array('access DonorSearch'),
+    ),
+  );
 }
 
 /**

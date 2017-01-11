@@ -10,13 +10,13 @@
           </thead>
          {foreach from=$rows item=row}
          <tr>
-          <td>{$row.searched_for}</td>
+          <td>{$row.IS}</td>
           <td>{$row.donor_name}</td>
           <td>{$row.address}</td>
           <td>{$row.state}</td>
           <td>{$row.donor_spouse_name}</td>
           <td>{$row.employer}</td>
-          <td>{$row.more|replace:'xx':$row.id}</td>
+          <td>{$row.searched_for}</td>
         </tr>
         {/foreach}
          </table>

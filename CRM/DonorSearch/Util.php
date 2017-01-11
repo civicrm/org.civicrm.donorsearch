@@ -121,4 +121,22 @@ class CRM_DonorSearch_Util {
     CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/ds/view', 'reset=1'));
   }
 
+  /**
+   * View the desired Donor Search profile of a contact
+   */
+  public static function viewProfile() {
+    $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);
+    $profileLink = civicrm_api3('Contact', 'getvalue', array(
+      'id' => $cid,
+      'return' => CRM_DonorSearch_FieldInfo::getXMLToCustomFieldNameMap('profile_link'),
+    ));
+
+    if ($profileLink) {
+      CRM_Utils_System::redirect($profileLink);
+    }
+    else {
+      CRM_Core_Error::fatal(ts('There is no Donor Search profile'));
+    }
+  }
+
 }

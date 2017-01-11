@@ -229,7 +229,7 @@ class CRM_DonorSearch_FieldInfo {
     );
   }
 
-  public static function getXMLToCustomFieldNameMap() {
+  public static function getXMLToCustomFieldNameMap($xmlName = NULL) {
     $xmlToCustomFieldMap = CRM_Core_BAO_Cache::getItem('donor search', 'xml to custom field map');
     if (!$xmlToCustomFieldMap) {
       $xmlToCustomFieldMap = array();
@@ -242,7 +242,7 @@ class CRM_DonorSearch_FieldInfo {
       }
       CRM_Core_BAO_Cache::setItem($xmlToCustomFieldMap, 'donor search', 'xml to custom field map');
     }
-    return $xmlToCustomFieldMap;
+    return CRM_Utils_Array::value($xmlName, $xmlToCustomFieldMap, $xmlToCustomFieldMap);
   }
 
   public static function getBasicSearchFields() {
