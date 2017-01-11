@@ -196,11 +196,11 @@ function donorsearch_civicrm_permission(&$permissions) {
  * @inheritDoc
  */
 function donorsearch_civicrm_pageRun(&$page) {
-  if ($page->getVar('_name') == 'CRM_Contact_Page_View_CustomData') {
+  if (CRM_Core_Permission::check('access DonorSearch') && $page->getVar('_name') == 'CRM_Contact_Page_View_CustomData') {
     CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
       'markup' => '
         <a class="no-popup button" target="_blank" href="' . CRM_Utils_System::url('civicrm/view/ds-profile', "cid=" . $page->getVar('_contactId')) . '">
-          <span>' . ts('View Donor Search Profile') . '</span>
+          <span>' . ts('View Donor Search Profile', array('domain' => 'org.civicrm.donorsearch')) . '</span>
         </a>
       ',
     ));
