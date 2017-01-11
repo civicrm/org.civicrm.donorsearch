@@ -45,6 +45,9 @@ class CRM_DonorSearch_Form_Register extends CRM_Core_Form {
    * Set variables up before form is built.
    */
   public function preProcess() {
+    if (!CRM_Core_Permission::check('administer CiviCRM')) {
+      CRM_Core_Error::fatal(ts('You do not permission to access this page, please contact your system administrator.'));
+    }
     $this->_apiKey = Civi::settings()->get('ds_api_key');
   }
 

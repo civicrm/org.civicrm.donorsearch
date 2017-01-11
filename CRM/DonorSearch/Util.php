@@ -40,7 +40,7 @@ class CRM_DonorSearch_Util {
     if (empty($previousDSparams['key'])) {
       $apiKey = Civi::settings()->get('ds_api_key');
       if (empty($apiKey)) {
-        CRM_Core_Error::fatal(ts("Donor Search API key missing."));
+        CRM_Core_Error::fatal(ts("Donor Search API key missing. Navigate to Administer >> System Settings >> Register Donor Search API Key to register API key"));
       }
       $previousDSparams['key'] = $apiKey;
     }

@@ -46,8 +46,9 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
     $this->_apiKey = Civi::settings()->get('ds_api_key');
 
     if (empty($this->_apiKey)) {
-      CRM_Core_Error::fatal(ts("Donor Search API key missing."));
+      CRM_Core_Error::fatal(ts("Donor Search API key missing. Navigate to Administer >> System Settings >> Register Donor Search API Key to register API key"));
     }
+
   }
 
   /**

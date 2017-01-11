@@ -9,14 +9,6 @@ require_once 'CRM/DonorSearch/FieldInfo.php';
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_config
  */
 function donorsearch_civicrm_config(&$config) {
-  $cid = CRM_Utils_Array::value('cid', $_GET);
-  CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
-    'markup' => '
-      <a class="no-popup button" target="_blank" href="' . CRM_Utils_System::url('civicrm/view/ds-profile', "cid=$cid") . '">
-        <span>View Donor Search Profile</span>
-      </a>
-    ',
-  ));
   _donorsearch_civix_civicrm_config($config);
 }
 
@@ -198,6 +190,21 @@ function changeDSNavigation($action) {
  */
 function donorsearch_civicrm_permission(&$permissions) {
   $permissions += array('access DonorSearch' => ts('Access DonorSearch'));
+}
+
+/**
+ * @inheritDoc
+ */
+function donorsearch_civicrm_pageRun(&$page) {
+  if ($page->getVar('_name') == 'CRM_Contact_Page_View_CustomData') {
+    CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
+      'markup' => '
+        <a class="no-popup button" target="_blank" href="' . CRM_Utils_System::url('civicrm/view/ds-profile', "cid=" . $page->getVar('_contactId')) . '">
+          <span>' . ts('View Donor Search Profile') . '</span>
+        </a>
+      ',
+    ));
+  }
 }
 
 function donorSearch_civicrm_summaryActions(&$menu, $contactId) {
