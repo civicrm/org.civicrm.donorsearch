@@ -11,6 +11,7 @@
          {foreach from=$rows item=row}
          <tr>
           <td>{$row.IS}</td>
+          <td>{$row.delete}</td>
           <td>{$row.donor_name}</td>
           <td>{$row.address}</td>
           <td>{$row.state}</td>

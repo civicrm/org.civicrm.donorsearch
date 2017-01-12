@@ -8,6 +8,7 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
     $dao = new CRM_DonorSearch_DAO_SavedSearch();
     $headers = array(
       '',
+      '',
       ts('Donor Name'),
       ts('Address'),
       ts('State'),
@@ -24,6 +25,9 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
       $donorSearches[$dao->id] = array(
         'IS' => sprintf("<a href=%s title='Integrated Search'><i class=\"crm-i fa-pencil\"></i></a>",
           CRM_Utils_System::url('civicrm/ds/integrated-search', "id=" . $dao->id)
+        ),
+        'delete' => sprintf("<a href=%s title='Delete'><i class=\"crm-i fa-trash\"></i></a>",
+          CRM_Utils_System::url('civicrm/ds/delete', "id=" . $dao->id)
         ),
         'searched_for' => sprintf("<a href=%s>%s</a>",
           CRM_Utils_System::url('civicrm/contact/view', "cid=" . $criteria['id']),
