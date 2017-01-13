@@ -76,7 +76,7 @@ function donorsearch_civicrm_install() {
   }
 
   $customGroup = civicrm_api3('custom_group', 'create', array(
-    'title' => ts('DonorSearch', array('domain' => 'org.civicrm.donorsearch')),
+    'title' => ts('Donor Search details', array('domain' => 'org.civicrm.donorsearch')),
     'name' => 'DS_details',
     'extends' => 'Contact',
     'domain_id' => CRM_Core_Config::domainID(),
@@ -196,7 +196,7 @@ function donorsearch_civicrm_permission(&$permissions) {
  * @inheritDoc
  */
 function donorsearch_civicrm_pageRun(&$page) {
-  if (CRM_Core_Permission::check('access DonorSearch') && $page->getVar('_name') == 'CRM_Contact_Page_View_CustomData') {
+  if ($page->getVar('_name') == 'CRM_Contact_Page_View_CustomData') {
     CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
       'markup' => '
         <a class="no-popup button" target="_blank" href="' . CRM_Utils_System::url('civicrm/view/ds-profile', "cid=" . $page->getVar('_contactId')) . '">
@@ -207,18 +207,38 @@ function donorsearch_civicrm_pageRun(&$page) {
   }
 }
 
+/**
+ * @inheritDoc
+ */
+function donorsearch_civicrm_tabset($link, &$allTabs, $context) {
+  // hide custom group 'DonorSearch' if user doesn't have 'access DonorSearch' permission
+  if (!CRM_Core_Permission::check('access DonorSearch') && $link == 'civicrm/contact/view') {
+    $customGroupID = CRM_Core_DAO::getFieldValue('CRM_Core_DAO_CustomGroup', 'DS_details', 'id', 'name');
+    $key = array_search("custom_$customGroupID", CRM_Utils_Array::collect('id', $allTabs));
+    if (!empty($allTabs)) {
+      unset($allTabs[$key]);
+    }
+  }
+}
+
+/**
+ * @inheritDoc
+ */
 function donorSearch_civicrm_summaryActions(&$menu, $contactId) {
-  $menu += array(
-    'view-ds-profile' => array(
-      'title' => ts('View Donor Search Profile'),
-      'ref' => 'ds-profile',
-      'key' => 'view-ds-profile',
-      'href' => CRM_Utils_System::url('civicrm/view/ds-profile', 'reset=1'),
-      'weight' => 100,
-      'class' => 'no-popup',
-      'permissions' => array('access DonorSearch'),
-    ),
-  );
+  // show action link 'View Donor Search Profile' if user have 'access DonorSearch' permission
+  if (CRM_Core_Permission::check('access DonorSearch')) {
+    $menu += array(
+      'view-ds-profile' => array(
+        'title' => ts('View Donor Search Profile'),
+        'ref' => 'ds-profile',
+        'key' => 'view-ds-profile',
+        'href' => CRM_Utils_System::url('civicrm/view/ds-profile', 'reset=1'),
+        'weight' => 100,
+        'class' => 'no-popup',
+        'permissions' => array('access DonorSearch'),
+      ),
+    );
+  }
 }
 
 /**

@@ -4,6 +4,8 @@ require_once 'CRM/Core/Page.php';
 
 class CRM_DonorSearch_Page_View extends CRM_Core_Page {
 
+  public $useLivePageJS = TRUE;
+
   public function run() {
     $dao = new CRM_DonorSearch_DAO_SavedSearch();
     $headers = array(
@@ -14,7 +16,7 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
       ts('State'),
       ts('Donor\'s Spouse Name'),
       ts('Employer'),
-      ts('Searched For'),
+      ts('Search performed by'),
     );
     $this->assign('headers', $headers);
 
@@ -23,7 +25,7 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
     while ($dao->fetch()) {
       $criteria = unserialize($dao->search_criteria);
       $donorSearches[$dao->id] = array(
-        'IS' => sprintf("<a href=%s title='Integrated Search'><i class=\"crm-i fa-pencil\"></i></a>",
+        'IS' => sprintf("<a href=%s title='Integrated Search' class='action-item medium-popup'><i class=\"crm-i fa-pencil\"></i></a>",
           CRM_Utils_System::url('civicrm/ds/integrated-search', "id=" . $dao->id)
         ),
         'delete' => sprintf("<a href=%s title='Delete'><i class=\"crm-i fa-trash\"></i></a>",
@@ -34,7 +36,8 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
           CRM_Contact_BAO_Contact::displayName($criteria['id'])
         ),
       );
-      $donorSearches[$dao->id]['donor_name'] = sprintf('%s %s %s',
+      $donorSearches[$dao->id]['donor_name'] = sprintf('<a href=%s title="View DonorSearch details" class="action-item">%s %s %s</a>',
+        CRM_DonorSearch_Util::getDonorSearchDetailsLink($criteria['id']),
         $criteria['dFname'],
         CRM_Utils_Array::value('dMname', $criteria, ''),
         $criteria['dLname']

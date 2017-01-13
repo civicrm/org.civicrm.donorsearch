@@ -139,4 +139,15 @@ class CRM_DonorSearch_Util {
     }
   }
 
+  /**
+   * Get donor search custom group view link
+   */
+  public static function getDonorSearchDetailsLink($contactID) {
+    $customGroupID = civicrm_api3('customGroup', 'getvalue', array(
+      'name' => 'DS_details',
+      'return' => 'id',
+    ));
+    return CRM_Utils_System::url('civicrm/contact/view/cd', sprintf('reset=1&gid=%d&cid=%d&selectedChild=custom_%d', $customGroupID, $contactID, $customGroupID));
+  }
+
 }

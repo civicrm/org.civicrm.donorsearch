@@ -126,8 +126,8 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
     }
     // on successful submission populate the custom fields with desired DS data and redirect to DS profile
     else {
-      $xmlData = CRM_DonorSearch_Util::processDSData($response, $searchFieldValues['id']);
-      $url = $xmlData['profile_link'];
+      CRM_DonorSearch_Util::processDSData($response, $searchFieldValues['id']);
+      $url = CRM_DonorSearch_Util::getDonorSearchDetailsLink($searchFieldValues['id']);
     }
 
     CRM_Utils_System::redirect($url);
