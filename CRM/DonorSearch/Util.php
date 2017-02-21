@@ -25,6 +25,9 @@
  +--------------------------------------------------------------------+
  */
 
+/**
+ * Class CRM_DonorSearch_Util
+ */
 class CRM_DonorSearch_Util {
 
   /**
@@ -32,7 +35,8 @@ class CRM_DonorSearch_Util {
    */
   public static function updateRecord() {
     $dao = new CRM_DonorSearch_DAO_SavedSearch();
-    $dao->id = CRM_Utils_Request::retrieve('id', 'Positive', $this, TRUE);
+    $self = NULL;
+    $dao->id = CRM_Utils_Request::retrieve('id', 'Positive', $self, TRUE);
     $dao->find(TRUE);
     $previousDSparams = unserialize($dao->search_criteria);
 
@@ -114,7 +118,8 @@ class CRM_DonorSearch_Util {
    */
   public static function deleteRecord() {
     $dao = new CRM_DonorSearch_DAO_SavedSearch();
-    $dao->id = CRM_Utils_Request::retrieve('id', 'Positive', $this, TRUE);
+    $self = NULL;
+    $dao->id = CRM_Utils_Request::retrieve('id', 'Positive', $self, TRUE);
     $dao->delete();
 
     CRM_Core_Session::setStatus(ts("Donor Search deleted successfully"), ts('Success'), 'success');
@@ -125,7 +130,8 @@ class CRM_DonorSearch_Util {
    * View the desired Donor Search profile of a contact
    */
   public static function viewProfile() {
-    $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);
+    $self = NULL;
+    $cid = CRM_Utils_Request::retrieve('cid', 'Positive', $self, TRUE);
     $profileLink = civicrm_api3('Contact', 'getvalue', array(
       'id' => $cid,
       'return' => CRM_DonorSearch_FieldInfo::getXMLToCustomFieldNameMap('profile_link'),

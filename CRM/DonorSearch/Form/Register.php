@@ -25,8 +25,6 @@
  +--------------------------------------------------------------------+
  */
 
-require_once 'CRM/Core/Form.php';
-
 /**
  * Form controller class
  *
@@ -104,7 +102,7 @@ class CRM_DonorSearch_Form_Register extends CRM_Core_Form {
         'user' => 'Username',
         'pass' => 'Password',
       );
-      foreach($params as $name => $label) {
+      foreach ($params as $name => $label) {
         if (empty($fields[$name])) {
           $errors[$name] = ts("Please enter %1", array(1 => $label));
         }
