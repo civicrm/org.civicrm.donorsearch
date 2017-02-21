@@ -247,18 +247,18 @@ class CRM_DonorSearch_FieldInfo {
 
   public static function getBasicSearchFields() {
     return array(
-      'id',
-      'dFname',
-      'dMname',
-      'dLname',
-      'dAddress',
-      'dCity',
-      'dZip',
-      'dState',
-      'dSFname',
-      'dSMname',
-      'dSLname',
-      'dEmployer',
+      'id' => 'id',
+      'dFname' => 'first_name',
+      'dMname' => 'middle_name',
+      'dLname' => 'last_name',
+      'dAddress' => 'street_address',
+      'dCity' => 'city',
+      'dZip' => 'postal_code',
+      'dState' => 'state_province',
+      'dEmployer' => 'current_employer',
+      'dSFname' => 'spouse.first_name',
+      'dSMname' => 'spouse.middle_name',
+      'dSLname' => 'spouse.last_name',
     );
   }
 
