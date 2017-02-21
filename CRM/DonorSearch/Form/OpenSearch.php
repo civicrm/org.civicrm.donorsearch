@@ -63,15 +63,6 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
       $defaults = unserialize(CRM_Core_DAO::getFieldValue('CRM_DonorSearch_DAO_SavedSearch', $this->_id, 'search_criteria'));
     }
 
-    // load with sample search data if cached DS data not found
-    if (empty($defaults)) {
-      $defaults = array(
-        'dFname' => 'Kevin',
-        'dLname' => 'Plank',
-        'dState' => 'MD',
-      );
-    }
-
     return $defaults;
   }
 
