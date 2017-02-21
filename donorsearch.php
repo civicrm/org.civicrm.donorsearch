@@ -285,6 +285,17 @@ function donorsearch_civicrm_caseTypes(&$caseTypes) {
 }
 
 /**
+ * @param $entityTypes
+ */
+function donorsearch_civicrm_entityTypes(&$entityTypes) {
+  $entityTypes[] = array(
+    'name' => 'DonorSearch',
+    'class' => 'CRM_DonorSearch_DAO_SavedSearch',
+    'table' => 'civicrm_ds_saved_search',
+  );
+}
+
+/**
  * Implements hook_civicrm_angularModules().
  *
  * Generate a list of Angular modules.
