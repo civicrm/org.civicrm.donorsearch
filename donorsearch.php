@@ -29,71 +29,6 @@ function donorsearch_civicrm_xmlMenu(&$files) {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_install
  */
 function donorsearch_civicrm_install() {
-  civicrm_api3('Navigation', 'create', array(
-    'label' => ts('Register Donor Search API Key', array('domain' => 'org.civicrm.donorsearch')),
-    'name' => 'ds_register_api',
-    'url' => 'civicrm/ds/register?reset=1',
-    'domain_id' => CRM_Core_Config::domainID(),
-    'is_active' => 1,
-    'parent_id' => civicrm_api3('Navigation', 'getvalue', array(
-      'return' => "id",
-      'name' => "System Settings",
-    )),
-    'permission' => 'administer CiviCRM',
-  ));
-
-  civicrm_api3('Navigation', 'create', array(
-    'id' => civicrm_api3('Navigation', 'getvalue', array(
-      'return' => "id",
-      'name' => "Find and Merge Duplicate Contacts",
-    )),
-    'has_separator' => 1,
-  ));
-  $params = array(
-    array(
-      'label' => ts('View Donor Search', array('domain' => 'org.civicrm.donorsearch')),
-      'name' => 'ds_view',
-      'url' => 'civicrm/ds/view?reset=1',
-    ),
-    array(
-      'label' => ts('New Donor Search', array('domain' => 'org.civicrm.donorsearch')),
-      'name' => 'ds_new',
-      'url' => 'civicrm/ds/open-search?reset=1',
-    ),
-  );
-  foreach ($params as $param) {
-    civicrm_api3('Navigation', 'create', array_merge($param,
-      array(
-        'domain_id' => CRM_Core_Config::domainID(),
-        'is_active' => 1,
-        'parent_id' => civicrm_api3('Navigation', 'getvalue', array(
-          'return' => "id",
-          'name' => "Contacts",
-        )),
-        'permission' => 'access DonorSearch',
-      )
-    ));
-  }
-
-  $customGroup = civicrm_api3('custom_group', 'create', array(
-    'title' => ts('Donor Search', array('domain' => 'org.civicrm.donorsearch')),
-    'name' => 'DS_details',
-    'extends' => 'Contact',
-    'domain_id' => CRM_Core_Config::domainID(),
-    'style' => 'Tab',
-    'is_active' => 1,
-    'collapse_adv_display' => 0,
-    'collapse_display' => 0
-  ));
-
-  foreach (CRM_DonorSearch_FieldInfo::getAttributes() as $param) {
-    civicrm_api3('custom_field', 'create', array_merge($param, array(
-      'custom_group_id' => $customGroup['id'],
-      'is_searchable' => 1,
-      'is_view' => 1,
-    )));
-  }
-  CRM_DonorSearch_FieldInfo::getXMLToCustomFieldNameMap();
   _donorsearch_civix_civicrm_install();
 }
 
@@ -103,32 +38,6 @@ function donorsearch_civicrm_install() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_uninstall
  */
 function donorsearch_civicrm_uninstall() {
-  changeDSNavigation('delete');
-
-  $customGroupID = civicrm_api3('custom_group', 'getvalue', array(
-    'name' => 'DS_details',
-    'return' => 'id',
-  ));
-  if (!empty($customGroupID)) {
-    foreach (CRM_DonorSearch_FieldInfo::getAttributes() as $param) {
-      $customFieldID = civicrm_api3('custom_field', 'getvalue', array(
-        'custom_group_id' => $customGroupID,
-        'name' => $param['name'],
-        'return' => 'id',
-      ));
-      if (!empty($customFieldID)) {
-        civicrm_api3('custom_field', 'delete', array('id' => $customFieldID));
-      }
-    }
-    civicrm_api3('custom_group', 'delete', array('id' => $customGroupID));
-  }
-
-  // delete 'donor search' cache
-  CRM_Core_BAO_Cache::deleteGroup('donor search');
-
-  // delete Donor Search API key
-  Civi::settings()->revert('ds_api_key');
-
   _donorsearch_civix_civicrm_uninstall();
 }
 
@@ -138,8 +47,6 @@ function donorsearch_civicrm_uninstall() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_enable
  */
 function donorsearch_civicrm_enable() {
-  changeDSNavigation('enable');
-
   _donorsearch_civix_civicrm_enable();
 }
 
@@ -149,8 +56,6 @@ function donorsearch_civicrm_enable() {
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_disable
  */
 function donorsearch_civicrm_disable() {
-  changeDSNavigation('disable');
-
   _donorsearch_civix_civicrm_disable();
 }
 
@@ -299,22 +204,7 @@ function donorsearch_civicrm_managed(&$entities) {
 }
 
 /**
- * Implements hook_civicrm_caseTypes().
- *
- * Generate a list of case-types.
- *
- * @param array $caseTypes
- *
- * Note: This hook only runs in CiviCRM 4.4+.
- *
- * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
- */
-function donorsearch_civicrm_caseTypes(&$caseTypes) {
-  _donorsearch_civix_civicrm_caseTypes($caseTypes);
-}
-
-/**
- * @param $entityTypes
+ * Implements hook_civicrm_entityTypes().
  */
 function donorsearch_civicrm_entityTypes(&$entityTypes) {
   $entityTypes[] = array(
@@ -344,7 +234,7 @@ function donorsearch_civicrm_alterAPIPermissions($entity, $action, $params, &$pe
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_caseTypes
  */
 function donorsearch_civicrm_angularModules(&$angularModules) {
-_donorsearch_civix_civicrm_angularModules($angularModules);
+  _donorsearch_civix_civicrm_angularModules($angularModules);
 }
 
 /**

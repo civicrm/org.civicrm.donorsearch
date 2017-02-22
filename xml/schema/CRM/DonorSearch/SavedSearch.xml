@@ -20,7 +20,7 @@
     <title>Contact</title>
     <type>int unsigned</type>
     <required>true</required>
-    <comment>Foreign key to the contact for this record.</comment>
+    <comment>Foreign key to the contact for this record</comment>
   </field>
   <foreignKey>
     <name>contact_id</name>
@@ -32,7 +32,7 @@
     <name>creator_id</name>
     <title>Creator</title>
     <type>int unsigned</type>
-    <comment>Foreign key to the contact who created this record.</comment>
+    <comment>Foreign key to the contact who created this record</comment>
   </field>
   <foreignKey>
     <name>creator_id</name>
