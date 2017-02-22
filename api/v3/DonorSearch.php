@@ -32,7 +32,7 @@
  */
 
 /**
- * Save an DonorSearch.
+ * Save a DonorSearch record.
  *
  * @param array $params
  *
@@ -58,7 +58,7 @@ function _civicrm_api3_donor_search_create_spec(&$spec) {
 }
 
 /**
- * Get an DonorSearch.
+ * Get a DonorSearch record.
  *
  * @param array $params
  *
@@ -78,7 +78,7 @@ function civicrm_api3_donor_search_get($params) {
 }
 
 /**
- * Delete an DonorSearch.
+ * Delete a DonorSearch record and related custom data.
  *
  * @param array $params
  *
@@ -86,5 +86,15 @@ function civicrm_api3_donor_search_get($params) {
  *   API result array
  */
 function civicrm_api3_donor_search_delete($params) {
-  return _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+  $ds = civicrm_api3('DonorSearch', 'getsingle', array('id' => $params['id']));
+  $result = _civicrm_api3_basic_delete(_civicrm_api3_get_BAO(__FUNCTION__), $params);
+
+  // Cascade delete to the custom data
+  $tableName = civicrm_api3('CustomGroup', 'getvalue', array(
+    'return' => "table_name",
+    'name' => "DS_details",
+  ));
+  $sql = "DELETE FROM {$tableName} WHERE entity_id = {$ds['contact_id']}";
+  CRM_Core_DAO::executeQuery($sql);
+  return $result;
 }
