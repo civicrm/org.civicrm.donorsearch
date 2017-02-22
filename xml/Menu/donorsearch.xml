@@ -30,11 +30,6 @@
     <access_arguments>access DonorSearch</access_arguments>
   </item>
   <item>
-    <path>civicrm/ds/delete</path>
-    <page_callback>CRM_DonorSearch_Util::deleteRecord</page_callback>
-    <access_arguments>access DonorSearch</access_arguments>
-  </item>
-  <item>
     <path>civicrm/view/ds-profile</path>
     <page_callback>CRM_DonorSearch_Util::viewProfile</page_callback>
     <access_arguments>access DonorSearch</access_arguments>

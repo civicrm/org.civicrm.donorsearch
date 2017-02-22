@@ -23,7 +23,6 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
       $criteria = unserialize($dao->search_criteria);
       $donorSearches[$dao->id] = array(
         'IS' => CRM_Utils_System::url('civicrm/ds/integrated-search', "id=" . $dao->id),
-        'delete' => CRM_Utils_System::url('civicrm/ds/delete', "id=" . $dao->id),
       );
       if ($dao->creator_id) {
         $donorSearches[$dao->id]['creator'] = sprintf("<a href=%s>%s</a>",

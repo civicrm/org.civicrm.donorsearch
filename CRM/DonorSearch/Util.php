@@ -114,19 +114,6 @@ class CRM_DonorSearch_Util {
   }
 
   /**
-   * Delete the desired Donor Search data of a contact
-   */
-  public static function deleteRecord() {
-    $dao = new CRM_DonorSearch_DAO_SavedSearch();
-    $self = NULL;
-    $dao->id = CRM_Utils_Request::retrieve('id', 'Positive', $self, TRUE);
-    $dao->delete();
-
-    CRM_Core_Session::setStatus(ts("Donor Search deleted successfully"), ts('Success'), 'success');
-    CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/ds/view', 'reset=1'));
-  }
-
-  /**
    * View the desired Donor Search profile of a contact
    */
   public static function viewProfile() {
