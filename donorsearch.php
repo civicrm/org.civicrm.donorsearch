@@ -296,6 +296,15 @@ function donorsearch_civicrm_entityTypes(&$entityTypes) {
 }
 
 /**
+ * Implements hook_civicrm_alterAPIPermissions().
+ */
+function donorsearch_civicrm_alterAPIPermissions($entity, $action, $params, &$permissions) {
+  $permissions['donor_search'] = array(
+    'default' => array('access DonorSearch'),
+  );
+}
+
+/**
  * Implements hook_civicrm_angularModules().
  *
  * Generate a list of Angular modules.
