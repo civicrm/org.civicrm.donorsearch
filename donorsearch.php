@@ -30,7 +30,7 @@ function donorsearch_civicrm_xmlMenu(&$files) {
  */
 function donorsearch_civicrm_install() {
   civicrm_api3('Navigation', 'create', array(
-    'label' => ts('Register Donor Search API Key'),
+    'label' => ts('Register Donor Search API Key', array('domain' => 'org.civicrm.donorsearch')),
     'name' => 'ds_register_api',
     'url' => 'civicrm/ds/register?reset=1',
     'domain_id' => CRM_Core_Config::domainID(),
@@ -51,12 +51,12 @@ function donorsearch_civicrm_install() {
   ));
   $params = array(
     array(
-      'label' => ts('View Donor Search'),
+      'label' => ts('View Donor Search', array('domain' => 'org.civicrm.donorsearch')),
       'name' => 'ds_view',
       'url' => 'civicrm/ds/view?reset=1',
     ),
     array(
-      'label' => ts('New Donor Search'),
+      'label' => ts('New Donor Search', array('domain' => 'org.civicrm.donorsearch')),
       'name' => 'ds_new',
       'url' => 'civicrm/ds/open-search?reset=1',
     ),
@@ -76,7 +76,7 @@ function donorsearch_civicrm_install() {
   }
 
   $customGroup = civicrm_api3('custom_group', 'create', array(
-    'title' => ts('Donor Search details', array('domain' => 'org.civicrm.donorsearch')),
+    'title' => ts('Donor Search', array('domain' => 'org.civicrm.donorsearch')),
     'name' => 'DS_details',
     'extends' => 'Contact',
     'domain_id' => CRM_Core_Config::domainID(),
@@ -189,7 +189,7 @@ function changeDSNavigation($action) {
  * @return void
  */
 function donorsearch_civicrm_permission(&$permissions) {
-  $permissions += array('access DonorSearch' => ts('Access DonorSearch'));
+  $permissions += array('access DonorSearch' => ts('Access DonorSearch', array('domain' => 'org.civicrm.donorsearch')));
 }
 
 /**
@@ -197,13 +197,26 @@ function donorsearch_civicrm_permission(&$permissions) {
  */
 function donorsearch_civicrm_pageRun(&$page) {
   if ($page->getVar('_name') == 'CRM_Contact_Page_View_CustomData') {
-    CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
-      'markup' => '
-        <a class="no-popup button" target="_blank" href="' . CRM_Utils_System::url('civicrm/view/ds-profile', "cid=" . $page->getVar('_contactId')) . '">
-          <span>' . ts('View Donor Search Profile', array('domain' => 'org.civicrm.donorsearch')) . '</span>
-        </a>
-      ',
-    ));
+    $contactId = $page->getVar('_contactId');
+    $count = civicrm_api3('DonorSearch', 'getcount', array('contact_id' => $contactId));
+    if ($count) {
+      CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
+        'markup' => '
+          <a class="no-popup button" target="_blank" href="' . CRM_Utils_System::url('civicrm/view/ds-profile', "cid=" . $contactId) . '">
+            <span>' . ts('View Donor Search Profile', array('domain' => 'org.civicrm.donorsearch')) . '</span>
+          </a>
+        ',
+      ));
+    }
+    else {
+      CRM_Core_Region::instance('custom-data-view-DS_details')->add(array(
+        'markup' => '
+          <a class="no-popup button" href="' . CRM_Utils_System::url('civicrm/ds/open-search', array('reset' => 1, 'cid' => $contactId)) . '">
+            <span>' . ts('New Donor Search', array('domain' => 'org.civicrm.donorsearch')) . '</span>
+          </a>
+        ',
+      ));
+    }
   }
 }
 
@@ -227,17 +240,33 @@ function donorsearch_civicrm_tabset($link, &$allTabs, $context) {
 function donorSearch_civicrm_summaryActions(&$menu, $contactId) {
   // show action link 'View Donor Search Profile' if user have 'access DonorSearch' permission
   if (CRM_Core_Permission::check('access DonorSearch')) {
-    $menu += array(
-      'view-ds-profile' => array(
-        'title' => ts('View Donor Search Profile'),
-        'ref' => 'ds-profile',
-        'key' => 'view-ds-profile',
-        'href' => CRM_Utils_System::url('civicrm/view/ds-profile', 'reset=1'),
-        'weight' => 100,
-        'class' => 'no-popup',
-        'permissions' => array('access DonorSearch'),
-      ),
-    );
+    $count = civicrm_api3('DonorSearch', 'getcount', array('contact_id' => $contactId));
+    if ($count) {
+      $menu += array(
+        'view-ds-profile' => array(
+          'title' => ts('Donor Search Profile', array('domain' => 'org.civicrm.donorsearch')),
+          'ref' => 'ds-profile',
+          'key' => 'view-ds-profile',
+          'href' => CRM_Utils_System::url('civicrm/view/ds-profile', 'reset=1'),
+          'weight' => 100,
+          'class' => 'no-popup',
+          'permissions' => array('access DonorSearch'),
+        ),
+      );
+    }
+    else {
+      $menu += array(
+        'add-ds-profile' => array(
+          'title' => ts('New Donor Search', array('domain' => 'org.civicrm.donorsearch')),
+          'ref' => 'ds-profile',
+          'key' => 'add-ds-profile',
+          'href' => CRM_Utils_System::url('civicrm/ds/open-search', array('reset' => 1, 'cid' => $contactId)),
+          'weight' => 100,
+          'class' => 'no-popup',
+          'permissions' => array('access DonorSearch'),
+        ),
+      );
+    }
   }
 }
 
