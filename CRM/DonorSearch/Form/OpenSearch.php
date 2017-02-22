@@ -152,6 +152,8 @@ class CRM_DonorSearch_Form_OpenSearch extends CRM_Core_Form {
     if ($this->_id) {
       $dao->id = $this->_id;
     }
+    $dao->contact_id = $values['id'];
+    $dao->creator_id = CRM_Core_Session::getLoggedInContactID();
     $dao->search_criteria = serialize($searchFieldValues);
     $dao->save();
 

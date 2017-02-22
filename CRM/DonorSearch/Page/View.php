@@ -10,8 +10,9 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
       ts('Donor Name'),
       ts('Address'),
       ts('State'),
-      ts('Donor\'s Spouse Name'),
+      ts('Spouse Name'),
       ts('Employer'),
+      ts('Search Performed by'),
       '',
     );
     $this->assign('headers', $headers);
@@ -24,6 +25,12 @@ class CRM_DonorSearch_Page_View extends CRM_Core_Page {
         'IS' => CRM_Utils_System::url('civicrm/ds/integrated-search', "id=" . $dao->id),
         'delete' => CRM_Utils_System::url('civicrm/ds/delete', "id=" . $dao->id),
       );
+      if ($dao->creator_id) {
+        $donorSearches[$dao->id]['creator'] = sprintf("<a href=%s>%s</a>",
+          CRM_Utils_System::url('civicrm/contact/view', array("cid" => $dao->creator_id)),
+          CRM_Contact_BAO_Contact::displayName($dao->creator_id)
+        );
+      }
       $donorSearches[$dao->id]['donor_name'] = sprintf('<a href=%s title="View DonorSearch details" class="action-item">%s %s %s</a>',
         CRM_DonorSearch_Util::getDonorSearchDetailsLink($criteria['id']),
         $criteria['dFname'],

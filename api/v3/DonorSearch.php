@@ -47,6 +47,17 @@ function civicrm_api3_donor_search_create($params) {
 }
 
 /**
+ * This is used for documentation and validation.
+ *
+ * @param array $spec description of fields supported by this API call
+ * @return void
+ * @see http://wiki.civicrm.org/confluence/display/CRMDOC/API+Architecture+Standards
+ */
+function _civicrm_api3_donor_search_create_spec(&$spec) {
+  $spec['creator_id']['api.default'] = 'user_contact_id';
+}
+
+/**
  * Get an DonorSearch.
  *
  * @param array $params

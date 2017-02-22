@@ -16,6 +16,31 @@
     <autoincrement>true</autoincrement>
   </primaryKey>
   <field>
+    <name>contact_id</name>
+    <title>Contact</title>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Foreign key to the contact for this record.</comment>
+  </field>
+  <foreignKey>
+    <name>contact_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>CASCADE</onDelete>
+  </foreignKey>
+  <field>
+    <name>creator_id</name>
+    <title>Creator</title>
+    <type>int unsigned</type>
+    <comment>Foreign key to the contact who created this record.</comment>
+  </field>
+  <foreignKey>
+    <name>creator_id</name>
+    <table>civicrm_contact</table>
+    <key>id</key>
+    <onDelete>SET NULL</onDelete>
+  </foreignKey>
+  <field>
     <name>search_criteria</name>
     <type>longtext</type>
     <comment>Serialized donor search data</comment>

@@ -53,6 +53,18 @@ class CRM_DonorSearch_DAO_SavedSearch extends CRM_Core_DAO {
    */
   public $id;
   /**
+   * Foreign key to the contact for this record.
+   *
+   * @var int unsigned
+   */
+  public $contact_id;
+  /**
+   * Foreign key to the contact who created this record.
+   *
+   * @var int unsigned
+   */
+  public $creator_id;
+  /**
    * Serialized donor search data
    *
    * @var longtext
@@ -80,6 +92,22 @@ class CRM_DonorSearch_DAO_SavedSearch extends CRM_Core_DAO {
           'type' => CRM_Utils_Type::T_INT,
           'description' => 'Donor Search saved search ID',
           'required' => true,
+        ) ,
+        'contact_id' => array(
+          'name' => 'contact_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Contact') ,
+          'description' => 'Foreign key to the contact for this record.',
+          'required' => true,
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
+        ) ,
+        'creator_id' => array(
+          'name' => 'creator_id',
+          'type' => CRM_Utils_Type::T_INT,
+          'title' => ts('Creator') ,
+          'description' => 'Foreign key to the contact who created this record.',
+          'required' => true,
+          'FKClassName' => 'CRM_Contact_DAO_Contact',
         ) ,
         'search_criteria' => array(
           'name' => 'search_criteria',

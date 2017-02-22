@@ -15,6 +15,7 @@
           <td>{$row.state}</td>
           <td>{$row.donor_spouse_name}</td>
           <td>{$row.employer}</td>
+          <td>{$row.creator}</td>
            <td>
              <a href="{$row.IS}" title="{ts}Edit Search{/ts}" class="action-item crm-hover-button"><i class="crm-i fa-pencil"></i></a>
              <a href="{$row.delete}" title="{ts}Delete{/ts}" class="action-item crm-hover-button"><i class="crm-i fa-trash"></i></a>
